@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Duesseldorf-Rallye - Klasse 8</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0f14;--surf:#161921;--surf2:#1e2230;--bord:#2a2f3f;--acc:#c8f54a;--acc2:#4af5b8;--acc3:#f5a44a;--txt:#e8eaf0;--mut:#6b7280;--dan:#f54a4a;--rad:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(200,245,74,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(200,245,74,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 0 100px}
+.header{padding:20px 20px 14px;border-bottom:1px solid var(--bord);position:sticky;top:0;background:rgba(13,15,20,.95);backdrop-filter:blur(12px);z-index:100}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.logo{font-family:'Space Mono',monospace;font-size:10px;color:var(--acc);letter-spacing:2px}
+.team-badge{font-family:'Space Mono',monospace;font-size:10px;background:var(--surf2);border:1px solid var(--bord);border-radius:20px;padding:3px 10px;color:var(--mut)}
+.team-badge span{color:var(--acc);font-weight:700}
+.header h1{font-size:20px;font-weight:800;line-height:1.1}
+.header h1 em{font-style:normal;color:var(--acc)}
+.prog-section{padding:14px 20px}
+.prog-top{display:flex;justify-content:space-between;margin-bottom:6px}
+.prog-top span{font-family:'Space Mono',monospace;font-size:10px;color:var(--mut)}
+.prog-top strong{font-family:'Space Mono',monospace;font-size:12px;color:var(--acc)}
+.prog-bar{height:4px;background:var(--surf2);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:4px;transition:width .6s ease}
+.dots{display:flex;gap:5px;margin-top:8px}
+.dot{height:4px;border-radius:4px;background:var(--surf2);transition:all .4s;flex:1}
+.dot.done{background:var(--acc)}
+.dot.active{background:var(--acc2);animation:pdot 1.5s ease-in-out infinite}
+@keyframes pdot{0%,100%{opacity:1}50%{opacity:.4}}
+.screen{display:none}
+.screen.active{display:block}
+.card{margin:20px;background:var(--surf);border:1px solid var(--bord);border-radius:var(--rad);padding:24px}
+.card h2{font-size:20px;font-weight:800;margin-bottom:8px}
+.card p{font-size:13px;color:var(--mut);line-height:1.6;margin-bottom:20px}
+.safety-box{background:rgba(245,164,74,.07);border:1px solid rgba(245,164,74,.25);border-radius:10px;padding:14px;margin-bottom:18px}
+.safety-box h4{font-family:'Space Mono',monospace;font-size:10px;color:var(--acc3);letter-spacing:1px;margin-bottom:8px}
+.safety-box ul{list-style:none;font-size:12px;line-height:1.7;color:var(--txt)}
+.safety-box li{margin-bottom:4px;padding-left:14px;position:relative}
+.safety-box li::before{content:'-';position:absolute;left:0;color:var(--acc3)}
+.field{margin-bottom:14px}
+.field label{font-family:'Space Mono',monospace;font-size:10px;color:var(--mut);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
+.field input,.field select{width:100%;background:var(--surf2);border:1px solid var(--bord);border-radius:8px;padding:11px 13px;color:var(--txt);font-family:'Syne',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--acc)}
+.btn{width:100%;background:var(--acc);color:#0d0f14;border:none;border-radius:10px;padding:13px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(200,245,74,.3)}
+.btn.sec{background:var(--surf2);color:var(--txt);border:1px solid var(--bord);box-shadow:none}
+.btn.sec:hover{border-color:var(--acc);color:var(--acc)}
+.slist{padding:0 20px}
+.scard{background:var(--surf);border:1px solid var(--bord);border-radius:var(--rad);margin-bottom:10px;cursor:pointer;transition:border-color .2s}
+.scard.cur{border-color:var(--acc2)}
+.scard.done{border-color:var(--acc);opacity:.7}
+.scard.locked{opacity:.35;cursor:default}
+.scard-inner{display:flex;align-items:center;gap:12px;padding:14px}
+.snum{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;flex-shrink:0}
+.snum.d{background:rgba(200,245,74,.15);color:var(--acc)}
+.snum.c{background:rgba(74,245,184,.15);color:var(--acc2)}
+.snum.p{background:var(--surf2);color:var(--mut)}
+.sinfo{flex:1;min-width:0}
+.sname{font-size:14px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.smeta{font-family:'Space Mono',monospace;font-size:10px;color:var(--mut)}
+.back{display:flex;align-items:center;gap:6px;padding:14px 20px;font-family:'Space Mono',monospace;font-size:10px;color:var(--mut);cursor:pointer;background:none;border:none;letter-spacing:1px}
+.back:hover{color:var(--acc)}
+.det{padding:0 20px 20px}
+.dhead{background:var(--surf);border:1px solid var(--bord);border-radius:var(--rad);padding:18px;margin-bottom:14px}
+.dnum{font-family:'Space Mono',monospace;font-size:10px;color:var(--acc);letter-spacing:2px;margin-bottom:6px}
+.dtitle{font-size:22px;font-weight:800;margin-bottom:4px}
+.dloc{font-family:'Space Mono',monospace;font-size:10px;color:var(--mut);margin-bottom:12px}
+.dcoords{display:inline-flex;align-items:center;gap:5px;background:var(--surf2);border:1px solid var(--bord);border-radius:7px;padding:7px 11px;font-family:'Space Mono',monospace;font-size:10px;color:var(--acc2);margin-bottom:5px}
+.mlink{font-family:'Space Mono',monospace;font-size:10px;color:var(--mut);background:none;border:none;cursor:pointer;padding:3px 0}
+.mlink:hover{color:var(--acc)}
+.divider{height:1px;background:var(--bord);margin:14px 0}
+.mbox{background:var(--surf);border:1px solid var(--bord);border-radius:var(--rad);padding:18px;margin-bottom:12px}
+.mbox h3{font-family:'Space Mono',monospace;font-size:9px;color:var(--acc);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.mtext{font-size:14px;line-height:1.7;color:var(--txt);margin-bottom:12px}
+.mq{background:rgba(200,245,74,.06);border:1px solid rgba(200,245,74,.2);border-radius:9px;padding:13px;font-size:13px;line-height:1.6}
+.mq strong{color:var(--acc);display:block;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;margin-bottom:5px}
+.foto-box{background:rgba(74,245,184,.05);border:1px solid rgba(74,245,184,.25);border-radius:var(--rad);padding:16px;margin-bottom:12px}
+.foto-box h3{font-family:'Space Mono',monospace;font-size:9px;color:var(--acc2);letter-spacing:2px;margin-bottom:10px}
+.foto-task{font-size:14px;line-height:1.6;margin-bottom:10px}
+.foto-hint{font-family:'Space Mono',monospace;font-size:10px;color:var(--mut);background:var(--surf2);border-radius:7px;padding:8px 10px;line-height:1.5}
+.htoggle{width:100%;background:none;border:1px dashed var(--bord);border-radius:9px;padding:11px;color:var(--mut);font-family:'Space Mono',monospace;font-size:10px;cursor:pointer;margin-bottom:12px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px}
+.htoggle:hover{border-color:var(--acc3);color:var(--acc3)}
+.hbox{background:rgba(245,164,74,.06);border:1px solid rgba(245,164,74,.2);border-radius:9px;padding:13px;font-size:13px;line-height:1.6;color:var(--acc3);margin-bottom:12px;display:none}
+.hbox.vis{display:block}
+.ans-sec{margin-bottom:12px}
+.ans-sec label{font-family:'Space Mono',monospace;font-size:10px;color:var(--mut);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px}
+.ans-sec input{width:100%;background:var(--surf2);border:1px solid var(--bord);border-radius:9px;padding:11px 13px;color:var(--txt);font-family:'Syne',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.ans-sec input:focus{border-color:var(--acc)}
+.foto-reminder{background:var(--surf2);border:1px solid var(--bord);border-radius:9px;padding:13px;margin-bottom:14px;font-size:13px;line-height:1.6;color:var(--mut)}
+.foto-reminder strong{color:var(--acc2);display:block;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;margin-bottom:5px}
+.done-banner{background:rgba(200,245,74,.08);border:1px solid rgba(200,245,74,.3);border-radius:9px;padding:14px;display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.done-banner p{font-size:13px;color:var(--acc);line-height:1.5}
+.final{padding:20px;text-align:center}
+.trophy{font-size:60px;display:block;margin-bottom:14px;animation:bounce 1s ease-in-out infinite alternate}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+.final h2{font-size:26px;font-weight:800;margin-bottom:8px}
+.final h2 em{font-style:normal;color:var(--acc)}
+.final > p{font-size:13px;color:var(--mut);line-height:1.6;margin-bottom:20px}
+.sco{background:var(--surf);border:1px solid var(--bord);border-radius:var(--rad);padding:18px;margin-bottom:14px;text-align:left}
+.sco h3{font-family:'Space Mono',monospace;font-size:9px;color:var(--mut);letter-spacing:2px;margin-bottom:14px}
+.srow{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--bord)}
+.srow:last-child{border-bottom:none}
+.srow span{font-size:13px}
+.srow strong{font-family:'Space Mono',monospace;font-size:13px;color:var(--acc)}
+.ans-rev{text-align:left;margin-bottom:18px}
+.ans-rev h3{font-family:'Space Mono',monospace;font-size:9px;color:var(--mut);letter-spacing:2px;margin-bottom:10px}
+.aitem{background:var(--surf);border:1px solid var(--bord);border-radius:9px;padding:13px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.alabel{font-family:'Space Mono',monospace;font-size:9px;color:var(--acc2);margin-bottom:5px}
+.atext{font-size:12px;line-height:1.5;color:var(--txt)}
+.acheck{font-size:16px;flex-shrink:0}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--acc);color:#0d0f14;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:11px 18px;border-radius:28px;transition:transform .4s cubic-bezier(.34,1.56,.64,1);z-index:999;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.err{background:var(--dan);color:white}
+.confetti-piece{position:fixed;width:8px;height:8px;border-radius:2px;animation:cfall linear forwards;z-index:998}
+@keyframes cfall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+.score-pill{display:inline-flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:10px;background:rgba(200,245,74,.12);color:var(--acc);border-radius:20px;padding:4px 10px;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="header">
+  <div class="header-top">
+    <div class="logo">&#9672; DUS-RALLYE</div>
+    <div class="team-badge">Gruppe: <span id="hteam">&#8212;</span></div>
+  </div>
+  <h1>Duesseldorf<br><em>Rallye</em></h1>
+</div>
+<div class="prog-section" id="prog" style="display:none">
+  <div class="prog-top"><span>Fortschritt</span><strong id="prog-txt">0 / 5</strong></div>
+  <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  <div class="dots" id="dots"></div>
+</div>
+<div class="screen active" id="s-setup">
+  <div class="card">
+    <h2>Willkommen zur Rallye!</h2>
+    <p>5 Stationen in der Duesseldorfer Altstadt. Beantwortet Fragen, macht Fotos und lernt eure Stadt von einer neuen Seite kennen!</p>
+    <div class="safety-box">
+      <h4>&#9888; WICHTIG VOR DEM START</h4>
+      <ul>
+        <li>Bleibt immer als ganze Gruppe zusammen</li>
+        <li>Handy-Akku checken, Lehrkraft-Nummer eingespeichert</li>
+        <li>Bei Problemen sofort die Lehrkraft anrufen</li>
+        <li>Strassenverkehr beachten - Handy weg beim Ueberqueren!</li>
+        <li>Treffpunkt am Ende: wie von der Lehrkraft angesagt</li>
+      </ul>
+    </div>
+    <div class="field">
+      <label>Gruppenname</label>
+      <input type="text" id="tname" placeholder="z.B. Team Rakete" maxlength="30">
+    </div>
+    <div class="field">
+      <label>Startnummer (von Lehrkraft zugewiesen)</label>
+      <select id="tstart">
+        <option value="0">1 - startet am Schlossturm</option>
+        <option value="1">2 - startet bei St. Lambertus</option>
+        <option value="2">3 - startet beim Jan-Wellem-Denkmal</option>
+        <option value="3">4 - startet beim Heine Haus</option>
+        <option value="4">5 - startet am Carlsplatz</option>
+        <option value="0">6 - startet am Schlossturm</option>
+        <option value="1">7 - startet bei St. Lambertus</option>
+        <option value="2">8 - startet beim Jan-Wellem-Denkmal</option>
+      </select>
+    </div>
+    <button class="btn" onclick="startGame()"><span>&#x1F9ED;</span> Rallye starten</button>
+  </div>
+</div>
+<div class="screen" id="s-list">
+  <div class="slist" id="slist"></div>
+</div>
+<div class="screen" id="s-detail">
+  <button class="back" onclick="showList()">&#8592; ZURUECK</button>
+  <div class="det" id="det"></div>
+</div>
+<div class="screen" id="s-final">
+  <div class="final">
+    <span class="trophy">&#x1F3C6;</span>
+    <h2>Geschafft!</h2>
+    <p>Ihr habt alle 5 Stationen gemeistert. Zeigt eure Fotos und Antworten gleich der Lehrkraft!</p>
+    <div class="sco">
+      <h3>EURE STATISTIK</h3>
+      <div class="srow"><span>&#x1F3F7;&#xFE0F; Gruppe</span><strong id="f-team">&#8212;</strong></div>
+      <div class="srow"><span>&#x1F4CD; Stationen</span><strong>5 / 5</strong></div>
+      <div class="srow"><span>&#9989; Richtige Antworten</span><strong id="f-score">&#8212;</strong></div>
+      <div class="srow"><span>&#x23F1;&#xFE0F; Zeit</span><strong id="f-time">&#8212;</strong></div>
+    </div>
+    <div class="ans-rev">
+      <h3>EURE ANTWORTEN</h3>
+      <div id="f-ans"></div>
+    </div>
+    <div style="background:rgba(74,245,184,.08);border:1px solid rgba(74,245,184,.25);border-radius:10px;padding:16px;margin-bottom:16px;font-size:13px;line-height:1.7;color:var(--acc2)">
+      <strong style="display:block;font-family:Space Mono,monospace;font-size:9px;letter-spacing:1px;margin-bottom:6px">&#x1F4F8; FOTOS NICHT VERGESSEN</strong>
+      Geht eure Galerie durch - waehlt eure 3 besten Fotos fuer die Praesentation in der Klasse aus!
+    </div>
+    <button class="btn" onclick="resetGame()"><span>&#x21BA;</span> Neu starten</button>
+  </div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var ST = [
+  {
+    name: 'Der Schlossturm',
+    loc: 'Burgplatz 30',
+    coords: '51.2274 N, 6.7711 O',
+    map: 'https://maps.google.com/?q=51.2274494,6.7711009',
+    dur: '15-18 Min',
+    mission: 'Der Schlossturm ist das aelteste noch stehende Gebaeude in ganz Duesseldorf - er ist aelter als 700 Jahre! Frueher gehoerte er zu einem riesigen Schloss, das 1872 fast komplett abbrannte. Nur der Turm hat ueberlebt.',
+    quest: 'Schaut euch den Turm von unten bis oben an. Zaehlt: Wie viele Stockwerke hat der Turm? Und findet die Stelle, an der man deutlich sieht, dass der obere Teil aus einer anderen Zeit stammt als der untere. Beschreibt den Unterschied in 1-2 Saetzen.',
+    foto: 'FOTO-CHALLENGE: Eine Person aus eurer Gruppe stellt sich vor den Turm und macht eine lustige Turm-Pose nach - Arme wie ein Turm hochgestreckt! Die anderen fotografieren von unten, damit es richtig hoch aussieht.',
+    hint: 'Der Turm hat 5 Stockwerke. Die unteren 3 sind rund und stammen aus dem Mittelalter (13. Jahrhundert). Die oberen 2 sind eckig (neuneckig!) und wurden 1552 ergaenzt - man erkennt es an den Saeulen.',
+    correctKeywords: ['5', 'fuenf', 'stockwerke']
+  },
+  {
+    name: 'St. Lambertus',
+    loc: 'Stiftsplatz 1',
+    coords: '51.2283 N, 6.7716 O',
+    map: 'https://maps.google.com/?q=51.2282953,6.7715864',
+    dur: '15-18 Min',
+    mission: 'Die Kirche St. Lambertus ist genauso alt wie Duesseldorf selbst - beide wurden 1288 gegruendet! Schaut nach oben: Der Kirchturm ist schief. Das war aber kein Bauplan, sondern ein Zufall.',
+    quest: 'Warum ist der Turm schief geworden? Sucht nach einem Hinweisschild in der Naehe oder fragt jemanden. Schreibt in einem Satz auf, was ihr herausgefunden habt.',
+    foto: 'FOTO-CHALLENGE: Alle aus der Gruppe stellen sich in eine Reihe und lehnen sich genauso schief wie der Turm - am besten alle in dieselbe Richtung! Foto von der Seite macht den Effekt am besten sichtbar.',
+    hint: 'Der Turmhelm aus Holz wurde 1815 gebaut. Das Holz war damals noch nicht richtig trocken und hat sich beim Trocknen verzogen - daher die Schraeglage bis heute.',
+    correctKeywords: ['holz', 'feucht', 'nass', 'trocknen', 'verzogen']
+  },
+  {
+    name: 'Jan-Wellem-Denkmal',
+    loc: 'Marktplatz',
+    coords: '51.2259 N, 6.7720 O',
+    map: 'https://maps.google.com/?q=51.2258562,6.7719894',
+    dur: '15-18 Min',
+    mission: 'Auf dem Marktplatz steht seit 1711 ein Reiterstandbild. Es zeigt Jan Wellem - eigentlich Kurfuerst Johann Wilhelm II. - einen der wichtigsten Herrscher in der Geschichte Duesseldorfs. Er holte viele Kuenstler in die Stadt.',
+    quest: 'Sprecht mit mindestens einer Lehrkraft oder einer erwachsenen Person in der Naehe (z.B. an einem Stand) und fragt: Wer war Jan Wellem? Schreibt in 1-2 Saetzen auf, was ihr erfahren habt. Schaut euch dann das Pferd genau an - was ist an seinen Beinen ungewoehnlich? (Tipp: zaehlt die Zehen!)',
+    foto: 'FOTO-CHALLENGE: Eine Person aus der Gruppe stellt sich neben das Denkmal und macht die gleiche Pose wie Jan Wellem - Arm ausgestreckt, Kopf erhoben, stolzer Blick! Die anderen fotografieren von vorne.',
+    hint: 'Das Pferd von Jan Wellem soll der Legende nach sechs Zehen an einem Bein haben statt der normalen Anzahl. Schaut ganz genau hin - viele Duesseldorfer kennen diese Legende gar nicht!',
+    correctKeywords: ['sechs', '6', 'zehen', 'kurfuerst', 'herrscher']
+  },
+  {
+    name: 'Heine Haus',
+    loc: 'Bolkerstrasse 53',
+    coords: '51.2261 N, 6.7749 O',
+    map: 'https://maps.google.com/?q=51.2260856,6.7748622',
+    dur: '15-18 Min',
+    mission: 'In diesem Haus wurde 1797 Heinrich Heine geboren - einer der beruehmtesten deutschen Dichter ueberhaupt. Er liebte Duesseldorf, musste aber spaeter nach Paris fliehen und hat seine Heimat von dort aus oft vermisst. Heute ist hier eine Buchhandlung.',
+    quest: 'Heine schrieb einmal: Denk ich an Deutschland in der Nacht, dann bin ich um den Schlaf gebracht. Erfindet als Gruppe euren eigenen Vierzeiler (4 Zeilen), der so beginnt: Denk ich an unsere Schule in der Nacht... Lustig, ernst, albern - alles ist erlaubt!',
+    foto: 'FOTO-CHALLENGE: Schreibt euren Vers auf ein Blatt Papier oder ins Handy. Haltet das Geschriebene hoch und macht ein Gruppenfoto vor dem Heine Haus - moeglichst mit lustigen Gesichtern!',
+    hint: 'Heine hat auch mal als Anfaenger angefangen. Reimt euch einfach was zusammen, das zu eurer Schule passt - es muss nicht perfekt sein, Hauptsache mit Schwung!',
+    correctKeywords: ['heine', 'deutschland', 'nacht', 'schlaf']
+  },
+  {
+    name: 'Carlsplatz',
+    loc: 'Carlsplatz 22-23',
+    coords: '51.2234 N, 6.7737 O',
+    map: 'https://maps.google.com/?q=51.223431,6.773664',
+    dur: '15-18 Min',
+    mission: 'Der Carlsplatz ist der aelteste Markt in Duesseldorf - es gibt ihn schon seit ueber 100 Jahren! Hier verkaufen Haendler Obst, Gemuese, Blumen, Kaese und vieles mehr. Viele Familien arbeiten hier schon seit Generationen.',
+    quest: 'Geht zu einem Marktstand und fragt freundlich: Wie lange gibt es Ihren Stand schon hier? Schreibt die Antwort auf. Findet auch heraus: Was ist das teuerste und was ist das billigste, das ihr auf dem Markt entdeckt?',
+    foto: 'FOTO-CHALLENGE: Kauft euch zusammen eine Kleinigkeit (z.B. ein Stueck Obst, darf preiswert sein) und macht ein Foto, wo alle gleichzeitig genuesslich reinbeissen oder es hochhalten!',
+    hint: 'Traut euch einfach zu fragen: Entschuldigung, wie lange gibt es Ihren Stand schon? - die meisten Haendler erzaehlen gerne und freuen sich ueber das Interesse von Schuelerinnen und Schuelern.',
+    correctKeywords: ['jahre', 'markt', 'stand']
+  }
+];
+
+var state = {
+  name: '', start: 0, current: null,
+  done: [false,false,false,false,false],
+  answers: ['','','','',''],
+  startTime: null,
+  order: []
+};
+
+function makeOrder(start) {
+  var o = [];
+  for (var i = 0; i < ST.length; i++) o.push((start + i) % ST.length);
+  return o;
+}
+
+function startGame() {
+  var n = document.getElementById('tname').value.trim();
+  var s = parseInt(document.getElementById('tstart').value);
+  if (!n) { showToast('Bitte Gruppennamen eingeben!', true); return; }
+  state.name = n;
+  state.start = s;
+  state.order = makeOrder(s);
+  state.startTime = Date.now();
+  document.getElementById('hteam').textContent = n;
+  document.getElementById('prog').style.display = 'block';
+  updateProg();
+  showList();
+}
+
+function showList() { showScreen('s-list'); renderList(); }
+
+function renderList() {
+  var c = document.getElementById('slist'); c.innerHTML = '';
+  state.order.forEach(function(si, pos) {
+    var s = ST[si];
+    var done = state.done[pos];
+    var prev = pos === 0 || state.done[pos-1];
+    var cur = prev && !done;
+    var div = document.createElement('div');
+    div.className = 'scard ' + (done ? 'done' : cur ? 'cur' : prev ? '' : 'locked');
+    var nc = done ? 'd' : cur ? 'c' : 'p';
+    div.innerHTML = '<div class="scard-inner"><div class="snum '+nc+'">'+(done?'&#10003;':(pos+1))+'</div><div class="sinfo"><div class="sname">'+s.name+'</div><div class="smeta">'+s.loc+' &middot; '+s.dur+'</div></div><div>'+(done?'&#9989;':cur?'&#x1F4CD;':'&#x1F512;')+'</div></div>';
+    if (prev || done) { div.onclick = (function(p){ return function(){ showStation(p); }; })(pos); }
+    c.appendChild(div);
+  });
+}
+
+function showStation(pos) {
+  state.current = pos;
+  var si = state.order[pos];
+  var s = ST[si];
+  var done = state.done[pos];
+  var c = document.getElementById('det');
+  var h = '';
+  h += '<div class="dhead">';
+  h += '<div class="dnum">STATION '+(pos+1)+' VON '+ST.length+'</div>';
+  h += '<div class="dtitle">'+s.name+'</div>';
+  h += '<div class="dloc">&#x1F4CD; '+s.loc+'</div>';
+  h += '<div class="divider"></div>';
+  h += '<div class="dcoords">&#x1F310; '+s.coords+'</div><br>';
+  h += '<button class="mlink" onclick="openMap('+pos+')">&#x2197; In Google Maps oeffnen</button>';
+  h += '</div>';
+  h += '<div class="mbox"><h3>WISSEN</h3><p class="mtext">'+s.mission+'</p>';
+  h += '<div class="mq"><strong>EURE AUFGABE</strong>'+s.quest+'</div></div>';
+  h += '<div class="foto-box"><h3>&#x1F4F8; FOTO-CHALLENGE</h3>';
+  h += '<p class="foto-task">'+s.foto+'</p>';
+  h += '<div class="foto-hint">&#x1F4BE; Foto auf dem Handy speichern - am Ende alle Bilder sammeln!</div></div>';
+  h += '<button class="htoggle" onclick="toggleHint(this)">&#x1F4A1; Tipp (nur im Notfall!)</button>';
+  h += '<div class="hbox" id="hbox">'+s.hint+'</div>';
+  if (done) {
+    h += '<div class="done-banner"><div style="font-size:22px">&#9989;</div><p>Station abgeschlossen!</p></div>';
+    if (state.answers[pos]) h += '<div class="mbox"><h3>EURE ANTWORT</h3><p class="mtext" style="font-size:13px;white-space:pre-wrap">'+escHtml(state.answers[pos])+'</p></div>';
+    h += '<button class="btn sec" onclick="showList()">Zur Uebersicht &#8594;</button>';
+  } else {
+    h += '<div class="ans-sec"><label>Eure Antwort</label>';
+    h += '<input type="text" id="ainp" placeholder="Schreibt eure Antwort hier..." oninput="saveDraft(this.value)" value="'+escHtml(state.answers[pos]).replace(/"/g,'&quot;')+'">';
+    h += '</div>';
+    h += '<div class="foto-reminder"><strong>&#x1F4F8; NICHT VERGESSEN</strong>Foto-Challenge durchfuehren und Foto auf dem Handy speichern, bevor ihr weitermacht!</div>';
+    h += '<button class="btn" onclick="submit('+pos+')"><span>&#10003;</span> Station abschliessen</button>';
+  }
+  c.innerHTML = h;
+  showScreen('s-detail');
+}
+
+function openMap(pos) { window.open(ST[state.order[pos]].map, '_blank'); }
+
+function toggleHint(btn) {
+  var b = document.getElementById('hbox');
+  b.classList.toggle('vis');
+  btn.textContent = b.classList.contains('vis') ? 'Tipp verbergen' : 'Tipp (nur im Notfall!)';
+}
+
+function saveDraft(v) {
+  state.answers[state.current] = v;
+}
+
+function checkAnswer(si, answer) {
+  var s = ST[si];
+  var lower = answer.toLowerCase();
+  for (var i = 0; i < s.correctKeywords.length; i++) {
+    if (lower.indexOf(s.correctKeywords[i]) !== -1) return true;
+  }
+  return false;
+}
+
+function submit(pos) {
+  var inp = document.getElementById('ainp');
+  var ans = inp ? inp.value.trim() : '';
+  if (!ans) { showToast('Bitte erst eine Antwort eintragen!', true); return; }
+  state.answers[pos] = ans;
+  state.done[pos] = true;
+  updateProg();
+  if (state.done.every(function(v){ return v; })) { confetti(); showFinal(); }
+  else { showToast('Station '+(pos+1)+' abgeschlossen!'); showList(); }
+}
+
+function updateProg() {
+  var done = state.done.filter(function(v){ return v; }).length;
+  document.getElementById('prog-txt').textContent = done + ' / ' + ST.length;
+  document.getElementById('prog-fill').style.width = (done/ST.length*100) + '%';
+  var dc = document.getElementById('dots'); dc.innerHTML = '';
+  state.done.forEach(function(d, i) {
+    var el = document.createElement('div');
+    var prev = i===0 || state.done[i-1];
+    el.className = 'dot ' + (d ? 'done' : prev&&!d ? 'active' : '');
+    dc.appendChild(el);
+  });
+}
+
+function showFinal() {
+  var el = Math.round((Date.now()-state.startTime)/60000);
+  var h = Math.floor(el/60), m = el%60;
+  document.getElementById('f-team').textContent = state.name;
+  document.getElementById('f-time').textContent = h>0 ? h+'h '+m+'min' : m+' Min';
+  var correctCount = 0;
+  var fa = document.getElementById('f-ans'); fa.innerHTML = '';
+  state.order.forEach(function(si, pos) {
+    var isCorrect = checkAnswer(si, state.answers[pos] || '');
+    if (isCorrect) correctCount++;
+    var item = document.createElement('div'); item.className = 'aitem';
+    item.innerHTML = '<div style="flex:1"><div class="alabel">'+ST[si].name.toUpperCase()+'</div><div class="atext">'+escHtml(state.answers[pos]||'-')+'</div></div><div class="acheck">'+(isCorrect?'&#9989;':'&#x1F4DD;')+'</div>';
+    fa.appendChild(item);
+  });
+  document.getElementById('f-score').textContent = correctCount + ' / ' + ST.length;
+  document.getElementById('prog').style.display = 'none';
+  showScreen('s-final');
+}
+
+function resetGame() {
+  state = {name:'',start:0,current:null,done:[false,false,false,false,false],answers:['','','','',''],startTime:null,order:[]};
+  document.getElementById('hteam').textContent = '-';
+  document.getElementById('tname').value = '';
+  document.getElementById('prog').style.display = 'none';
+  showScreen('s-setup');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function showToast(msg, err) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (err?' err':'') + ' show';
+  setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function confetti() {
+  var cols = ['#c8f54a','#4af5b8','#f5a44a','#f54a4a','#fff'];
+  for (var i=0;i<60;i++) {
+    (function(i){ setTimeout(function(){
+      var el=document.createElement('div'); el.className='confetti-piece';
+      el.style.cssText='left:'+(Math.random()*100)+'vw;background:'+cols[Math.floor(Math.random()*cols.length)]+';animation-duration:'+(1.5+Math.random()*2)+'s;animation-delay:'+(Math.random()*.5)+'s;width:'+(6+Math.random()*8)+'px;height:'+(6+Math.random()*8)+'px';
+      document.body.appendChild(el);
+      setTimeout(function(){ el.remove(); },4000);
+    },i*30); })(i);
+  }
+}
+</script>
+</body>
+</html>
